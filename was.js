@@ -2,19 +2,38 @@
 //https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects
 //https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder/decode#Browser_compatibility
 class was {
-	constructor(e) { //pass this to WAS to get the elements id
-		this.url=e.title //url to query php when found
+	constructor(e, file, php) { //pass this to WAS to get the elements id
+		this.file=file //url to query php when found
+		this.php=php
+		this.node=e.parentNode //gets parent div
 
 		//make ajax req to server for string
-
 		this.str="123"
-		this.bits=10
-		this.node=e.parentNode
 
-		this.node.getElementsByTagName("PROGRESS")[0].max=Math.pow(2,this.bits)
+		this.bits=15
+		this.node.getElementsByTagName("SPAN")[0].innerHTML=file
 
-		for(i=0;i<Math.pow(2,this.bits);i++) {
-			//
+		for(var i=0;;i++) { //loops forever untill POW is completed
+			this.hash=sha512(this.str+i)
+			this.digest=''
+			for(var j of this.hash) { //loops through each character of hex digest
+				var dec=parseInt(j,16) //turns hex to dec
+				var bin=dec.toString(2) //turns hex into binary
+				this.pow=i
+				this.digest+="0".repeat(4-bin.length)+bin //adds 0s, eg turns "10" into "0010"
+			}
+			if (this.digest.substr(0,this.bits)=="0".repeat(this.bits)) {
+				var fd=new FormData()
+				fd.append("str",this.str)
+				fd.append("pow",this.pow)
+				fd.append("hash",this.hash)
+				fd.append("file",this.file)
+				var req=new XMLHttpRequest()
+				req.open("POST",this.php)
+				req.send(fd)
+				break
+				//digest with "this.bits" of leading 0s found, send to server
+			}
 		}
 	}
 }

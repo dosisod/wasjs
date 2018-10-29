@@ -1,4 +1,10 @@
-img.wasjs {
+div.wasjs {
+	display: inline-block;
+	padding: 10px;
+	border: 1px solid #666;
+}
+.wasjs img {
+	vertical-align: top;
 	width: 64px;
 	height: 64px;
 	image-rendering: -webkit-optimize-contrast;
@@ -7,12 +13,12 @@ img.wasjs {
 	image-rendering: -o-crisp-edges;
 	image-rendering: pixelated;
 }
-progress.wasjs::-webkit-progress-value {
-	background: #006fff;
-}
-progress.wasjs::-moz-progress-bar {
-	background: #006fff;
-}
-progress.wasjs::-webkit-progress-bar {
-	background: #006fff;
+.wasjs span {
+	display: inline-block;
+	padding: 5px;
+	font-family: monospace, monospace;
+	color: #006fff;
+	font-weight: bold;
+	vertical-align: bottom;
+	border-bottom: 4px solid #006fff;
 }
