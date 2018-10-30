@@ -2,39 +2,45 @@
 //https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects
 //https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder/decode#Browser_compatibility
 class was {
-	constructor(e, file, php) { //pass this to WAS to get the elements id
+	constructor(c, file, php) { //pass this to WAS to get the elements id
 		this.file=file //url to query php when found
 		this.php=php
-		this.node=e.parentNode //gets parent div
+		this.node=c.parentNode //gets parent div
 
 		//make ajax req to server for string
 		this.str="123"
 
-		this.bits=15
-		this.node.getElementsByTagName("SPAN")[0].innerHTML=file
+		this.bits=17
+		var span=document.createElement("SPAN")
+		span.innerHTML=file
+		this.node.append(span)
 
-		for(var i=0;;i++) { //loops forever untill POW is completed
-			this.hash=sha512(this.str+i)
-			this.digest=''
-			for(var j of this.hash) { //loops through each character of hex digest
-				var dec=parseInt(j,16) //turns hex to dec
-				var bin=dec.toString(2) //turns hex into binary
-				this.pow=i
-				this.digest+="0".repeat(4-bin.length)+bin //adds 0s, eg turns "10" into "0010"
-			}
-			if (this.digest.substr(0,this.bits)=="0".repeat(this.bits)) {
-				var fd=new FormData()
-				fd.append("str",this.str)
-				fd.append("pow",this.pow)
-				fd.append("hash",this.hash)
-				fd.append("file",this.file)
-				var req=new XMLHttpRequest()
-				req.open("POST",this.php)
-				req.send(fd)
-				break
-				//digest with "this.bits" of leading 0s found, send to server
+		this.run=function(e) {
+			//this.node.addEventListener("click", this.get.bind(null,this.get),false)
+			for(var i=0;;i++) { //loops forever untill POW is completed
+				var hash=sha512(e.str+i)
+				var digest=''
+				for(var j of hash) { //loops through each character of hex digest
+					var dec=parseInt(j,16) //turns hex to dec
+					var bin=dec.toString(2) //turns hex into binary
+					digest+="0".repeat(4-bin.length)+bin //adds 0s, eg turns "10" into "0010"
+				}
+				if (digest.substr(0,e.bits)=="0".repeat(e.bits)) {
+					var fd=new FormData()
+					fd.append("str",e.str)
+					fd.append("pow",i)
+					fd.append("hash",hash)
+					fd.append("file",e.file)
+					var req=new XMLHttpRequest()
+					req.open("POST",e.php)
+					req.send(fd)
+					alert(digest)
+					break
+					//digest with "this.bits" of leading 0s found, send to server
+				}
 			}
 		}
+		this.node.addEventListener("click", this.run.bind(null, this))
 	}
 }
 
