@@ -1,46 +1,49 @@
 //may be useful
 //https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects
-//https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder/decode#Browser_compatibility
 class was {
 	constructor(c, file, php) { //pass this to WAS to get the elements id
 		this.file=file //url to query php when found
 		this.php=php
 		this.node=c.parentNode //gets parent div
 
-		//make ajax req to server for string
-		this.str="123"
-
-		this.bits=17
 		var span=document.createElement("SPAN")
 		span.innerHTML=file
 		this.node.append(span)
 
-		this.run=function(e) {
-			//this.node.addEventListener("click", this.get.bind(null,this.get),false)
-			for(var i=0;;i++) { //loops forever untill POW is completed
-				var hash=sha512(e.str+i)
-				var digest=''
-				for(var j of hash) { //loops through each character of hex digest
-					var dec=parseInt(j,16) //turns hex to dec
-					var bin=dec.toString(2) //turns hex into binary
-					digest+="0".repeat(4-bin.length)+bin //adds 0s, eg turns "10" into "0010"
-				}
-				if (digest.substr(0,e.bits)=="0".repeat(e.bits)) {
-					var fd=new FormData()
-					fd.append("str",e.str)
-					fd.append("pow",i)
-					fd.append("hash",hash)
-					fd.append("file",e.file)
-					var req=new XMLHttpRequest()
-					req.open("POST",e.php)
-					req.send(fd)
-					alert(digest)
-					break
-					//digest with "this.bits" of leading 0s found, send to server
-				}
-			}
-		}
-		this.node.addEventListener("click", this.run.bind(null, this))
+		var tmpfd=new FormData() //temp formdata for passing php post params
+		tmpfd.append("c",1)
+		fetch(this.php,{method:"post",body:tmpfd}) //make request
+			.then(e=>e.text()) //get text
+				.then(e=>{
+					this.str=e
+
+					this.bits=17
+					this.run=function(e) {
+						//this.node.addEventListener("click", this.get.bind(null,this.get),false)
+						for(var i=0;;i++) { //loops forever untill POW is completed
+							var hash=sha512(e.str+i)
+							var digest=''
+							for(var j of hash) { //loops through each character of hex digest
+								var dec=parseInt(j,16) //turns hex to dec
+								var bin=dec.toString(2) //turns hex into binary
+								digest+="0".repeat(4-bin.length)+bin //adds 0s, eg turns "10" into "0010"
+							}
+							if (digest.substr(0,e.bits)=="0".repeat(e.bits)) {
+								var fd=new FormData()
+								fd.append("str",e.str)
+								fd.append("pow",i)
+								fd.append("hash",hash)
+								fd.append("file",e.file)
+								var req=new XMLHttpRequest()
+								req.open("POST",e.php)
+								req.send(fd)
+								//alert(e.str+" "+digest)
+								break
+							}
+						}
+					}
+					this.node.addEventListener("click", this.run.bind(null, this))
+				})
 	}
 }
 
