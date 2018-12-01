@@ -1,49 +1,66 @@
-//may be useful
-//https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects
 class was {
-	constructor(c, file, php) { //pass this to WAS to get the elements id
+	constructor(current, file, php) { //pass this to WAS to get the elements id
 		this.file=file //url to query php when found
-		this.php=php
-		this.node=c.parentNode //gets parent div
+		this.php=php //php server to upload to
+		this.node=current.parentNode //gets parent div
 
-		var span=document.createElement("SPAN")
-		span.innerHTML=file
-		this.node.append(span)
+		this.span=document.createElement("SPAN") //makes new span for the file name
+		this.span.innerHTML=file
+		this.node.append(this.span) //appends it to the parent div
 
-		var tmpfd=new FormData() //temp formdata for passing php post params
-		tmpfd.append("c",1)
-		fetch(this.php,{method:"post",body:tmpfd}) //make request
-			.then(e=>e.text()) //get text
-				.then(e=>{
-					this.str=e
+		this.clicked=function() { this.run() }
+		this.clickedh=this.clicked.bind(this) //click handler
+		this.node.addEventListener("click", this.clickedh, false)
+	}
+	async run() {
+		this.key=await this.challenge() //waits for response from server
+		this.bits=17 //bits can be as high as desired, no lagging
+		this.index=1
+		var mine=function(e){
+			for(;;this.index++) { //loops forever until POW is completed
+				this.span.innerHTML=this.file+" [Mining]"
+				var hash=sha512(this.key+this.index)
+				var digest=''
+				for(var j of hash) { //loops through each character of hex digest to create binary digest
+					var dec=parseInt(j,16) //turns hex to dec
+					var bin=dec.toString(2) //turns hex into binary
+					digest+="0".repeat(4-bin.length)+bin //adds 0s, eg turns "10" into "0010"
+				}
+				if (digest.substr(0,this.bits)=="0".repeat(this.bits)) {
+					this.pow=this.index
+					//console.log(this.key+" "+this.pow)
+					this.span.innerHTML=this.file+" [Done]"
+					this.done()
+					break
+				}
+				if (this.index%2500==0) { //miner must start and stop to prevent "slow script" error
+					setTimeout(mine, 5)
+					this.index++ //makes sure next miner picks up where this one left off
+					break //prevents the miner from running after its interval is over
+				}
+			}
+		}
+		mine=mine.bind(this) //gives it access to this
+		mine() //runs until POW is done
+	}
+	done() { //sends finished POW to server
+		var fd=new FormData()
+		fd.append("key",this.key)
+		fd.append("pow",this.pow)
+		fd.append("file",this.file)
 
-					this.bits=17
-					this.run=function(e) {
-						//this.node.addEventListener("click", this.get.bind(null,this.get),false)
-						for(var i=0;;i++) { //loops forever untill POW is completed
-							var hash=sha512(e.str+i)
-							var digest=''
-							for(var j of hash) { //loops through each character of hex digest
-								var dec=parseInt(j,16) //turns hex to dec
-								var bin=dec.toString(2) //turns hex into binary
-								digest+="0".repeat(4-bin.length)+bin //adds 0s, eg turns "10" into "0010"
-							}
-							if (digest.substr(0,e.bits)=="0".repeat(e.bits)) {
-								var fd=new FormData()
-								fd.append("str",e.str)
-								fd.append("pow",i)
-								fd.append("hash",hash)
-								fd.append("file",e.file)
-								var req=new XMLHttpRequest()
-								req.open("POST",e.php)
-								req.send(fd)
-								//alert(e.str+" "+digest)
-								break
-							}
-						}
-					}
-					this.node.addEventListener("click", this.run.bind(null, this))
-				})
+		/* 
+		var req=new XMLHttpRequest()
+		req.open("POST",this.php)
+		req.send(fd)
+		*/
+	}
+	challenge() { //gets new challenge from server
+		var form=new FormData()
+		form.append("challenge",1) //1 can be anything, php only checks if challenge is set
+		return fetch(this.php,{method:"post",body:form})
+			.then(e=>e.text())
+			.then(e=>{return e}) //return the text output
 	}
 }
 

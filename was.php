@@ -1,10 +1,10 @@
 <?php
 
-if (isset($_POST["c"])) { //if user requests challenge
+if (isset($_POST["challenge"])) { //if user requests challenge
 	echo str_replace("=","",base64_encode(random_bytes(16))); //return a challenge string
 }
 
-/* not needed yet
+/* not needed yet (converts hex digest to binary str)
 $hash=hash("sha512",$_POST["str"].$_POST["pow"]);
 $out="";
 for ($i=0;$i<strlen($hash);$i++){ //loop through each char of hex digest
@@ -12,7 +12,7 @@ for ($i=0;$i<strlen($hash);$i++){ //loop through each char of hex digest
 }
 */
 
-/* not needed yet
+/* not needed yet (escapes string and grabs file)
 $dir=$_SERVER["HOME"]."/Downloads/"; //file storage must be out of docroot or user can navigate to it
 
 $fn=$_POST["FILE"]; //get filename as string
