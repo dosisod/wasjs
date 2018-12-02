@@ -4,21 +4,33 @@ class was {
 		this.php=php //php server to upload to
 		this.node=current.parentNode //gets parent div
 
-		this.span=document.createElement("SPAN") //makes new span for the file name
-		this.span.innerHTML=file
-		this.node.append(this.span) //appends it to the parent div
+		this.fspan=document.createElement("SPAN") //file name span
+		this.fspan.innerHTML=file+"&nbsp;"
+		this.node.append(this.fspan) //appends it to the parent div
 
-		this.clicked=function() { this.run() }
+		this.status=document.createElement("SPAN") //file name span
+		this.status.innerHTML=""
+		this.status.style.backgroundColor="#006fff" //inverts the text
+		this.status.style.color="white"
+		this.status.style.display="none" //hides annoying block when there is no text
+		this.node.append(this.status) //appends it to the parent div
+		this.active=false
+
+		this.clicked=function() {
+			if(!this.active) { this.run() }
+		}
 		this.clickedh=this.clicked.bind(this) //click handler
 		this.node.addEventListener("click", this.clickedh, false)
 	}
 	async run() {
+		this.active=true
 		this.key=await this.challenge() //waits for response from server
-		this.bits=17 //bits can be as high as desired, no lagging
+		this.bits=20 //bits can be as high as desired, no lagging
 		this.index=1
+		this.status.style.display="inline-block"
+		this.status.innerHTML="Mining"
 		var mine=function(e){
 			for(;;this.index++) { //loops forever until POW is completed
-				this.span.innerHTML=this.file+" [Mining]"
 				var hash=sha512(this.key+this.index)
 				var digest=''
 				for(var j of hash) { //loops through each character of hex digest to create binary digest
@@ -28,13 +40,13 @@ class was {
 				}
 				if (digest.substr(0,this.bits)=="0".repeat(this.bits)) {
 					this.pow=this.index
-					//console.log(this.key+" "+this.pow)
-					this.span.innerHTML=this.file+" [Done]"
+					console.log(digest)
+					this.status.innerHTML="Done"
 					this.done()
 					break
 				}
 				if (this.index%2500==0) { //miner must start and stop to prevent "slow script" error
-					setTimeout(mine, 5)
+					setTimeout(mine, 0)
 					this.index++ //makes sure next miner picks up where this one left off
 					break //prevents the miner from running after its interval is over
 				}
