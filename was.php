@@ -4,9 +4,12 @@ $bits=17; //forces the client to get a POW with n leading bits
 
 $shm_key=ftok(__FILE__,"t"); //shared memory key
 
+//
+
 if (isset($_POST["challenge"])) { //if user requests challenge
-	$bytes=random_bytes(32); //writes bytes
-	echo base64_encode($bytes); //create challenge
+	$bytes=random_bytes(32); //gets random bytes
+	$challenge=base64_encode($bytes); //create challenge
+	echo json_encode(array("bits"=>$bits,"challenge"=>$challenge)); //returns json obj to client
 }
 
 /* not needed yet (converts hex digest to binary str)

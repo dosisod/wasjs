@@ -23,11 +23,13 @@ class was {
 		this.node.addEventListener("click", this.clickedh, false)
 	}
 	async run() {
-		this.active=true
-		this.key=await this.challenge() //waits for response from server
-		this.bits=10 //bits can be as high as desired, no lagging
-		this.index=1
-		this.status.style.display="inline-block"
+		this.active=true //makes sure miner isnt being ran more then once
+		this.json=await this.challenge() //waits for response from server
+		this.key=this.json["challenge"]
+		this.bits=this.json["bits"]
+		
+		this.index=1 //starts at 1 since 0 would cause "index%2500==0" to be true
+		this.status.style.display="inline-block" //unhide the status tab
 		this.status.innerHTML="Mining"
 		var mine=function(e){
 			for(;;this.index++) { //loops forever until POW is completed
@@ -36,7 +38,7 @@ class was {
 				for(var j of hash) { //loops through each character of hex digest to create binary digest
 					var dec=parseInt(j,16) //turns hex to dec
 					var bin=dec.toString(2) //turns hex into binary
-					digest+="0".repeat(4-bin.length)+bin //adds 0s, eg turns "10" into "0010"
+					digest+="0".repeat(4-bin.length)+bin //adds leading 0s, eg turns "10" into "0010"
 				}
 				if (digest.substr(0,this.bits)=="0".repeat(this.bits)) {
 					this.pow=this.index
@@ -51,7 +53,7 @@ class was {
 				}
 			}
 		}
-		mine=mine.bind(this) //gives it access to this
+		mine=mine.bind(this) //gives mine() access to this
 		mine() //runs until POW is done
 	}
 	done() { //sends finished POW to server
@@ -70,7 +72,7 @@ class was {
 		var form=new FormData()
 		form.append("challenge",1) //1 can be anything, php only checks if challenge is set
 		return fetch(this.php,{method:"post",body:form})
-			.then(e=>e.text())
+			.then(e=>e.json())
 			.then(e=>{return e}) //return the text output
 	}
 }
