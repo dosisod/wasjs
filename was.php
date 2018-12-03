@@ -1,7 +1,12 @@
 <?php
 
+$bits=17; //forces the client to get a POW with n leading bits
+
+$shm_key=ftok(__FILE__,"t"); //shared memory key
+
 if (isset($_POST["challenge"])) { //if user requests challenge
-	echo str_replace("=","",base64_encode(random_bytes(16))); //return a challenge string
+	$bytes=random_bytes(32); //writes bytes
+	echo base64_encode($bytes); //create challenge
 }
 
 /* not needed yet (converts hex digest to binary str)
@@ -21,4 +26,26 @@ if (strpos($fn,"../")===false) { //make sure there is no ".." in file path
 	//do stuff
 }
 */
+
+function shm_id(int $index) { //returns id or false
+	return @shmop_open($index, "a", 0644, 0) or false;
+}
+
+function shm_get(int $index) {
+	$tmpid=shm_id($index);
+	if ($tmpid) {
+		return @shmop_read($tmpid, 0, 0);
+	}
+	else {
+		return false;
+	}
+}
+
+function shm_put(int $index) {
+	$tmpid=shm_id($index);
+	if ($tmpid) {
+		shm_write($tmpid, data, 0);
+	}
+}
+
 ?>

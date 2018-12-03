@@ -25,7 +25,7 @@ class was {
 	async run() {
 		this.active=true
 		this.key=await this.challenge() //waits for response from server
-		this.bits=20 //bits can be as high as desired, no lagging
+		this.bits=10 //bits can be as high as desired, no lagging
 		this.index=1
 		this.status.style.display="inline-block"
 		this.status.innerHTML="Mining"
@@ -40,7 +40,6 @@ class was {
 				}
 				if (digest.substr(0,this.bits)=="0".repeat(this.bits)) {
 					this.pow=this.index
-					console.log(digest)
 					this.status.innerHTML="Done"
 					this.done()
 					break
