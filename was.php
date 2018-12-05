@@ -6,10 +6,20 @@ $shm_key=ftok(__FILE__,"t"); //shared memory key
 
 //
 
-if (isset($_POST["challenge"])) { //if user requests challenge
-	$bytes=random_bytes(32); //gets random bytes
+if (isset($_POST["challenge"]) && !isset($_POST["pow"])) { //if user requests challenge
+	$bytes=random_bytes(32);
 	$challenge=base64_encode($bytes); //create challenge
+	
 	echo json_encode(array("bits"=>$bits,"challenge"=>$challenge)); //returns json obj to client
+}
+else if (isset($_POST["challenge"]) && isset($_POST["pow"])) { //if user completed challenge
+	echo json_encode(array("placeholder"=>"text"));
+}
+else {
+	//shm_put($shm_key, "HELLO");
+	//$shm_first=shm_id($shm_key);
+	$res=shmop_open($shm_key,"a", 0644, 0);
+	//echo "[".$res."]";
 }
 
 /* not needed yet (converts hex digest to binary str)
@@ -36,19 +46,23 @@ function shm_id(int $index) { //returns id or false
 
 function shm_get(int $index) {
 	$tmpid=shm_id($index);
-	if ($tmpid) {
-		return @shmop_read($tmpid, 0, 0);
-	}
-	else {
-		return false;
+	if ($tmpid) { return @shmop_read($tmpid, 0, 0); }
+	else { return false; }
+}
+
+function shm_find(string $str, int $key, int $start, int $stop) {
+	for ($i=$start;$i<$stop;$i++) {
+		$tempstr=shm_get($key+$i);
+		if ($tempstr) {
+			if ($tempstr==$str) { return $i; }
+		}
+		else { return false; }
 	}
 }
 
-function shm_put(int $index) {
+function shm_put(int $index, string $str) {
 	$tmpid=shm_id($index);
-	if ($tmpid) {
-		shm_write($tmpid, data, 0);
-	}
+	if ($tmpid) { shmop_write($tmpid, $str, 0); }
 }
 
 ?>

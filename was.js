@@ -27,6 +27,11 @@ class was {
 		this.json=await this.challenge() //waits for response from server
 		this.key=this.json["challenge"]
 		this.bits=this.json["bits"]
+		if (this.bits>32) {
+			this.status.style.display="inline-block" //unhide the status tab
+			this.status.innerHTML="Server Error"
+			return
+		}
 		
 		this.index=1 //starts at 1 since 0 would cause "index%2500==0" to be true
 		this.status.style.display="inline-block" //unhide the status tab
@@ -56,17 +61,16 @@ class was {
 		mine=mine.bind(this) //gives mine() access to this
 		mine() //runs until POW is done
 	}
-	done() { //sends finished POW to server
-		var fd=new FormData()
-		fd.append("key",this.key)
-		fd.append("pow",this.pow)
-		fd.append("file",this.file)
+	async done() { //sends finished POW to server
+		var form=new FormData()
+		form.append("challenge",this.key)
+		form.append("pow",this.pow)
+		form.append("file",this.file)
 
-		/* 
-		var req=new XMLHttpRequest()
-		req.open("POST",this.php)
-		req.send(fd)
-		*/
+		var resp=await fetch(this.php,{method:"post",body:form})
+			.then(e=>e.json())
+			.then(e=>{return e})
+			.catch(e=>{this.status.innerHTML=e})
 	}
 	challenge() { //gets new challenge from server
 		var form=new FormData()
