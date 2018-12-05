@@ -1,19 +1,16 @@
 class was {
 	constructor(current, file, php) { //pass this to WAS to get the elements id
+		current.onload=undefined
+		
 		this.file=file //url to query php when found
 		this.php=php //php server to upload to
 		this.node=current.parentNode //gets parent div
 
+		this.img=current //instance is called from inside img
 		this.fspan=document.createElement("SPAN") //file name span
 		this.fspan.innerHTML=file+"&nbsp;"
 		this.node.append(this.fspan) //appends it to the parent div
 
-		this.status=document.createElement("SPAN") //file name span
-		this.status.innerHTML=""
-		this.status.style.backgroundColor="#006fff" //inverts the text
-		this.status.style.color="white"
-		this.status.style.display="none" //hides annoying block when there is no text
-		this.node.append(this.status) //appends it to the parent div
 		this.active=false
 
 		this.clicked=function() {
@@ -27,15 +24,10 @@ class was {
 		this.json=await this.challenge() //waits for response from server
 		this.key=this.json["challenge"]
 		this.bits=this.json["bits"]
-		if (this.bits>32) {
-			this.status.style.display="inline-block" //unhide the status tab
-			this.status.innerHTML="Server Error"
-			return
-		}
+		if (this.bits>32) { return }
 		
 		this.index=1 //starts at 1 since 0 would cause "index%2500==0" to be true
-		this.status.style.display="inline-block" //unhide the status tab
-		this.status.innerHTML="Mining"
+		this.img.src="mining.gif"
 		var mine=function(e){
 			for(;;this.index++) { //loops forever until POW is completed
 				var hash=sha512(this.key+this.index)
@@ -47,7 +39,6 @@ class was {
 				}
 				if (digest.substr(0,this.bits)=="0".repeat(this.bits)) {
 					this.pow=this.index
-					this.status.innerHTML="Done"
 					this.done()
 					break
 				}
@@ -62,6 +53,7 @@ class was {
 		mine() //runs until POW is done
 	}
 	async done() { //sends finished POW to server
+		this.img.src="done.gif"
 		var form=new FormData()
 		form.append("challenge",this.key)
 		form.append("pow",this.pow)
@@ -70,7 +62,6 @@ class was {
 		var resp=await fetch(this.php,{method:"post",body:form})
 			.then(e=>e.json())
 			.then(e=>{return e})
-			.catch(e=>{this.status.innerHTML=e})
 	}
 	challenge() { //gets new challenge from server
 		var form=new FormData()
