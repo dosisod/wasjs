@@ -53,7 +53,7 @@ class was {
 		mine() //runs until POW is done
 	}
 	async done() { //sends finished POW to server
-		this.img.src="done.gif"
+		this.img.src="wasjs.png"
 		var form=new FormData()
 		form.append("challenge",this.key)
 		form.append("pow",this.pow)
@@ -66,6 +66,7 @@ class was {
 	challenge() { //gets new challenge from server
 		var form=new FormData()
 		form.append("challenge",1) //1 can be anything, php only checks if challenge is set
+		form.append("file",this.file)
 		return fetch(this.php,{method:"post",body:form})
 			.then(e=>e.json())
 			.then(e=>{return e}) //return the text output
