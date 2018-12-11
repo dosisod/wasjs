@@ -9,22 +9,18 @@ class memory {
 	public function __construct() {
 		$this->shm_size=32*1024; //makes 32kb memory cache
 		$this->shm_key=ftok(__FILE__,"t"); //shared memory key
-		@$this->shm_id=shmop_open($this->shm_key, "a", 0644, $this->shm_size);
-		if (!empty($this->shm_id)) {
-			$this->shm_id=shmop_open($this->shm_key, "w", 0644, $this->shm_size);
-			$this->shm_used=0;
+		$this->shm_id=shmop_open($this->shm_key, "c", 0644, $this->shm_size);
+		$this->shm_used=0;
 
-			$current=str_replace("\0", "", shmop_read($this->shm_id,0,0)); //read and removes null bytes
-			$ret=json_decode($current);
-			if (($ret==$current)||(json_last_error()!==JSON_ERROR_NONE)) { $this->reset(); } //reset if json is bad
-		}
+		$current=str_replace("\0", "", shmop_read($this->shm_id,0,0)); //read and removes null bytes
+		$ret=json_decode($current);
+		if (($ret==$current)||(json_last_error()!==JSON_ERROR_NONE)) { $this->reset(); } //reset if json is bad
 		else { $this->reset(); }
 	}
 	function reset() {
 		shmop_delete($this->shm_id);
 		shmop_close($this->shm_id);
-		shmop_open($this->shm_key, "c", 0644,$this->shm_size);
-		$this->shm_id=shmop_open($this->shm_key, "w", 0644, $this->shm_size);
+		$this->shm_id=shmop_open($this->shm_key, "c", 0644, $this->shm_size);
 		$this->update_arr(array());
 	}
 	function update_str($str) {
