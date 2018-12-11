@@ -8,7 +8,7 @@ class was {
 
 		this.img=current //instance is called from inside img
 		this.fspan=document.createElement("SPAN") //file name span
-		this.fspan.innerHTML=file+"&nbsp;"
+		this.fspan.innerHTML=file
 		this.node.append(this.fspan) //appends it to the parent div
 
 		this.active=false
@@ -38,6 +38,7 @@ class was {
 					digest+="0".repeat(4-bin.length)+bin //adds leading 0s, eg turns "10" into "0010"
 				}
 				if (digest.substr(0,this.bits)=="0".repeat(this.bits)) {
+					console.log(this.key,this.index,digest)
 					this.pow=this.index
 					this.done()
 					break
