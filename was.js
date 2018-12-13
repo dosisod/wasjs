@@ -31,14 +31,13 @@ class was {
 		var mine=function(e){
 			for(;;this.index++) { //loops forever until POW is completed
 				var hash=sha512(this.key+this.index)
-				var digest=''
+				var digest='' //cast to string
 				for(var j of hash) { //loops through each character of hex digest to create binary digest
 					var dec=parseInt(j,16) //turns hex to dec
 					var bin=dec.toString(2) //turns hex into binary
 					digest+="0".repeat(4-bin.length)+bin //adds leading 0s, eg turns "10" into "0010"
 				}
 				if (digest.substr(0,this.bits)=="0".repeat(this.bits)) {
-					console.log(this.key,this.index,digest)
 					this.pow=this.index
 					this.done()
 					break
@@ -60,7 +59,7 @@ class was {
 		form.append("pow",this.pow)
 		form.append("file",this.file)
 
-		var resp=await fetch(this.php,{method:"post",body:form})
+		var resp=await fetch(this.php,{method:"post",credentials:"same-origin",body:form})
 			.then(e=>e.json())
 			.then(e=>{return e})
 	}
@@ -68,7 +67,7 @@ class was {
 		var form=new FormData()
 		form.append("challenge",1) //1 can be anything, php only checks if challenge is set
 		form.append("file",this.file)
-		return fetch(this.php,{method:"post",body:form})
+		return fetch(this.php,{method:"post",credentials:"same-origin",body:form})
 			.then(e=>e.json())
 			.then(e=>{return e}) //return the text output
 	}
