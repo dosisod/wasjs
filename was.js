@@ -8,7 +8,7 @@ class was {
 
 		this.img=current //instance is called from inside img
 		this.fspan=document.createElement("SPAN") //file name span
-		this.fspan.innerHTML=file+"&nbsp;"
+		this.fspan.innerHTML=file
 		this.node.append(this.fspan) //appends it to the parent div
 
 		this.active=false
@@ -18,6 +18,11 @@ class was {
 		}
 		this.clickedh=this.clicked.bind(this) //click handler
 		this.node.addEventListener("click", this.clickedh, false)
+
+		this.minerimg=new Image() //caches imgs
+		this.minerimg.src="mining.gif"
+		this.doneimg=new Image()
+		this.doneimg.src="done.png"
 	}
 	async run() {
 		this.active=true //makes sure miner isnt being ran more then once
@@ -27,11 +32,17 @@ class was {
 		if (this.bits>32) { return }
 		
 		this.index=1 //starts at 1 since 0 would cause "index%2500==0" to be true
-		this.img.src="mining.gif"
+
+		this.img.onload=()=>{ //update line after img
+			this.fspan.style.borderBottom="4px solid #ff006e"
+			this.fspan.style.color="#ff006e"
+		}
+		this.img.src=this.minerimg.src //the img will already be in cache
+		
 		var mine=function(e){
 			for(;;this.index++) { //loops forever until POW is completed
 				var hash=sha512(this.key+this.index)
-				var digest=''
+				var digest='' //cast to string
 				for(var j of hash) { //loops through each character of hex digest to create binary digest
 					var dec=parseInt(j,16) //turns hex to dec
 					var bin=dec.toString(2) //turns hex into binary
@@ -53,13 +64,18 @@ class was {
 		mine() //runs until POW is done
 	}
 	async done() { //sends finished POW to server
-		this.img.src="wasjs.png"
+		this.img.onload=()=> {
+			this.fspan.style.borderBottom="4px solid #6eff00"
+			this.fspan.style.color="#6eff00"
+		}
+		this.img.src=this.doneimg.src
+		
 		var form=new FormData()
 		form.append("challenge",this.key)
 		form.append("pow",this.pow)
 		form.append("file",this.file)
 
-		var resp=await fetch(this.php,{method:"post",body:form})
+		var resp=await fetch(this.php,{method:"post",credentials:"same-origin",body:form})
 			.then(e=>e.json())
 			.then(e=>{return e})
 	}
@@ -67,7 +83,7 @@ class was {
 		var form=new FormData()
 		form.append("challenge",1) //1 can be anything, php only checks if challenge is set
 		form.append("file",this.file)
-		return fetch(this.php,{method:"post",body:form})
+		return fetch(this.php,{method:"post",credentials:"same-origin",body:form})
 			.then(e=>e.json())
 			.then(e=>{return e}) //return the text output
 	}
