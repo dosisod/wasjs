@@ -1,7 +1,12 @@
 <?php
 session_start();
 
+//Modify these as needed
+
+$path="/absolute/path/to/files/"; //root path to files (dont put in doc root)
 $bits=17; //forces the client to get a POW with n leading bits
+
+//
 
 if (isset($_POST["challenge"]) && !isset($_POST["pow"]) && isset($_POST["file"])) { //if user requests challenge
 	$challenge=base64_encode(random_bytes(32)); //create challenge
@@ -22,10 +27,31 @@ else if (isset($_POST["challenge"]) && isset($_POST["pow"]) && isset($_POST["fil
 				$bin=$bin.str_pad(base_convert($hex[$i],16,2),4,"0",STR_PAD_LEFT); //create 1s and 0s
 			}
 			if (substr($bin,0,$bits)==str_repeat("0",$bits)) { //check if leading 0s is >= bits
-				//file complete, download it
+				//pow is done, make temp link file
+
+				//create random url name
+				$fn=hash("md5", random_bytes(64)).".php";
+
+				//code to be ran on the temp file
+				$file='<?php'.PHP_EOL.
+				'unlink("'.$fn.'");'.PHP_EOL.
+				'session_start();'.PHP_EOL.
+				'$file="'.$_SESSION["file"].'";'.PHP_EOL.
+				'session_unset();'.PHP_EOL.
+				'session_destroy();'.PHP_EOL.
+				'$clean=basename($file);'.PHP_EOL.
+				'$fullpath="'.$path.'".$clean;'.PHP_EOL.
+				'if (!file_exists($fullpath)) die();'.PHP_EOL.
+				'$mime=finfo_file(finfo_open(FILEINFO_MIME_TYPE), $fullpath);'.PHP_EOL.
+				'header("Content-Disposition: attachment; filename=$clean;");'.PHP_EOL.
+				'header("Content-Type: $mime");'.PHP_EOL.
+				'header("Content-Length: filesize($fullpath)");'.PHP_EOL.
+				'$f=fopen($fullpath, "rb");'.PHP_EOL.
+				'fpassthru($f);'.PHP_EOL.
+				'?>';
 				
-				session_unset();
-				session_destroy();
+				file_put_contents($fn, $file); //output to file
+				echo $fn; //send the url to be downloaded by the client
 			}
 			else {
 				//POW is incorrect
@@ -39,15 +65,5 @@ else if (isset($_POST["challenge"]) && isset($_POST["pow"]) && isset($_POST["fil
 		//session data isnt set
 	}
 }
-
-/* not needed yet (escapes string and grabs file)
-$dir=$_SERVER["HOME"]."/Downloads/"; //file storage must be out of docroot or user can navigate to it
-
-$fn=$_POST["FILE"]; //get filename as string
-
-if (strpos($fn,"../")===false) { //make sure there is no ".." in file path
-	//do stuff
-}
-*/
 
 ?>

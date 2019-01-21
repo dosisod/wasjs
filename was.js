@@ -11,15 +11,16 @@ class was {
 		this.fspan.innerHTML=file
 		this.node.append(this.fspan) //appends it to the parent div
 
+		this.link=document.createElement("a")
+		this.link.style.display="none"
+		this.node.append(this.link)
+
 		this.active=false
 
-		this.clicked=function() {
-			if(!this.active) { this.run() }
-		}
-		this.clickedh=this.clicked.bind(this) //click handler
-		this.node.addEventListener("click", this.clickedh, false)
+		this.node.onclick=()=>{ if (!this.active) this.run() }
 
-		this.minerimg=new Image() //caches imgs
+		//caches imgs
+		this.minerimg=new Image()
 		this.minerimg.src="mining.gif"
 		this.doneimg=new Image()
 		this.doneimg.src="done.png"
@@ -29,7 +30,7 @@ class was {
 		this.json=await this.challenge() //waits for response from server
 		this.key=this.json["challenge"]
 		this.bits=this.json["bits"]
-		if (this.bits>32) { return }
+		if (this.bits>32) return
 		
 		this.index=1 //starts at 1 since 0 would cause "index%2500==0" to be true
 
@@ -39,11 +40,11 @@ class was {
 		}
 		this.img.src=this.minerimg.src //the img will already be in cache
 		
-		var mine=function(e){
+		var mine=()=>{
 			for(;;this.index++) { //loops forever until POW is completed
 				var hash=sha512(this.key+this.index)
 				var digest='' //cast to string
-				for(var j of hash) { //loops through each character of hex digest to create binary digest
+				for (var j of hash) { //loops through each character of hex digest to create binary digest
 					var dec=parseInt(j,16) //turns hex to dec
 					var bin=dec.toString(2) //turns hex into binary
 					digest+="0".repeat(4-bin.length)+bin //adds leading 0s, eg turns "10" into "0010"
@@ -60,7 +61,6 @@ class was {
 				}
 			}
 		}
-		mine=mine.bind(this) //gives mine() access to this
 		mine() //runs until POW is done
 	}
 	async done() { //sends finished POW to server
@@ -71,19 +71,22 @@ class was {
 		this.img.src=this.doneimg.src
 		
 		var form=new FormData()
-		form.append("challenge",this.key)
-		form.append("pow",this.pow)
-		form.append("file",this.file)
+		form.append("challenge", this.key)
+		form.append("pow", this.pow)
+		form.append("file", this.file)
 
-		var resp=await fetch(this.php,{method:"post",credentials:"same-origin",body:form})
-			.then(e=>e.json())
-			.then(e=>{return e})
+		var resp=await fetch(this.php, {method:"post", credentials:"same-origin", body:form})
+			.then(e=>e.text())
+			.then(e=>{
+				this.link.href=e
+				this.link.click()
+			})
 	}
 	challenge() { //gets new challenge from server
 		var form=new FormData()
-		form.append("challenge",1) //1 can be anything, php only checks if challenge is set
-		form.append("file",this.file)
-		return fetch(this.php,{method:"post",credentials:"same-origin",body:form})
+		form.append("challenge", 1) //1 can be anything, php only checks if challenge is set
+		form.append("file", this.file)
+		return fetch(this.php, {method:"post", credentials:"same-origin", body:form})
 			.then(e=>e.json())
 			.then(e=>{return e}) //return the text output
 	}
