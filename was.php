@@ -34,20 +34,20 @@ else if (isset($_POST["challenge"]) && isset($_POST["pow"]) && isset($_POST["fil
 
 				//code to be ran on the temp file
 				$file='<?php'.PHP_EOL.
-				'unlink("'.$fn.'");'.PHP_EOL.
+				'unlink("'.$fn.'");'.PHP_EOL. //delete the file so it cannot be clicked again
 				'session_start();'.PHP_EOL.
 				'$file="'.$_SESSION["file"].'";'.PHP_EOL.
 				'session_unset();'.PHP_EOL.
 				'session_destroy();'.PHP_EOL.
-				'$clean=basename($file);'.PHP_EOL.
+				'$clean=basename($file);'.PHP_EOL. //make sure there is no file trickery
 				'$fullpath="'.$path.'".$clean;'.PHP_EOL.
-				'if (!file_exists($fullpath)) die();'.PHP_EOL.
+				'if (!file_exists($fullpath)) die();'.PHP_EOL. //php will send itself if file isnt found
 				'$mime=finfo_file(finfo_open(FILEINFO_MIME_TYPE), $fullpath);'.PHP_EOL.
 				'header("Content-Disposition: attachment; filename=$clean;");'.PHP_EOL.
 				'header("Content-Type: $mime");'.PHP_EOL.
 				'header("Content-Length: filesize($fullpath)");'.PHP_EOL.
 				'$f=fopen($fullpath, "rb");'.PHP_EOL.
-				'fpassthru($f);'.PHP_EOL.
+				'fpassthru($f);'.PHP_EOL. //stream file to client
 				'?>';
 				
 				file_put_contents($fn, $file); //output to file
@@ -55,15 +55,21 @@ else if (isset($_POST["challenge"]) && isset($_POST["pow"]) && isset($_POST["fil
 			}
 			else {
 				//POW is incorrect
+				echo "ERROR: POW is incorrect";
 			}
 		}
 		else {
 			//session challenge and post challenge dont match
+			echo "ERROR: POST and session data do not match";
 		}
 	}
 	else {
 		//session data isnt set
+		echo "ERROR: Invalid session data";
 	}
+}
+else {
+	echo "ERROR: Invalid POST request(s)";
 }
 
 ?>

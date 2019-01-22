@@ -78,8 +78,13 @@ class was {
 		var resp=await fetch(this.php, {method:"post", credentials:"same-origin", body:form})
 			.then(e=>e.text())
 			.then(e=>{
-				this.link.href=e
-				this.link.click()
+				if (e.includes("ERROR")) {
+					alert(e)
+				}
+				else {
+					this.link.href=e
+					this.link.click()
+				}
 			})
 	}
 	challenge() { //gets new challenge from server
