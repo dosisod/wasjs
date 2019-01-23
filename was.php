@@ -41,7 +41,10 @@ else if (isset($_POST["challenge"]) && isset($_POST["pow"]) && isset($_POST["fil
 				'session_destroy();'.PHP_EOL.
 				'$clean=basename($file);'.PHP_EOL. //make sure there is no file trickery
 				'$fullpath="'.$path.'".$clean;'.PHP_EOL.
-				'if (!file_exists($fullpath)) die();'.PHP_EOL. //php will send itself if file isnt found
+				'if (!file_exists($fullpath)) {;'.PHP_EOL. //php will send itself if file isnt found
+				'	echo "ERROR: File not found";'.PHP_EOL.
+				'	die();'.PHP_EOL.
+				'}'.PHP_EOL.
 				'$mime=finfo_file(finfo_open(FILEINFO_MIME_TYPE), $fullpath);'.PHP_EOL.
 				'header("Content-Disposition: attachment; filename=$clean;");'.PHP_EOL.
 				'header("Content-Type: $mime");'.PHP_EOL.

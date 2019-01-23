@@ -1,14 +1,14 @@
 class was {
-	constructor(current, file, php) { //pass this to WAS to get the elements id
+	constructor(current, file) { //pass this to WAS to get the elements id
 		current.onload=undefined
 		
 		this.file=file //url to query php when found
-		this.php=php //php server to upload to
+		this.php="was.php" //php server to upload to
 		this.node=current.parentNode //gets parent div
 
 		this.img=current //instance is called from inside img
 		this.fspan=document.createElement("SPAN") //file name span
-		this.fspan.innerHTML=file
+		this.fspan.innerText=file
 		this.node.append(this.fspan) //appends it to the parent div
 
 		this.link=document.createElement("a")
@@ -24,6 +24,8 @@ class was {
 		this.minerimg.src="mining.gif"
 		this.doneimg=new Image()
 		this.doneimg.src="done.png"
+		this.errorimg=new Image()
+		this.errorimg.src="error.png"
 	}
 	async run() {
 		this.active=true //makes sure miner isnt being ran more then once
@@ -78,12 +80,17 @@ class was {
 		var resp=await fetch(this.php, {method:"post", credentials:"same-origin", body:form})
 			.then(e=>e.text())
 			.then(e=>{
-				if (e.includes("ERROR")) {
-					alert(e)
+				if (e.includes("ERROR")) { //if there is an error returned
+					this.img.onload=()=> {
+						this.fspan.innerText=e //show error
+						this.fspan.style.borderBottom="4px solid #ff0000" //change line color
+						this.fspan.style.color="#ff0000" //change text color
+					}
+					this.img.src=this.errorimg.src //load error img
 				}
 				else {
-					this.link.href=e
-					this.link.click()
+					this.link.href=e //sets invisible link
+					this.link.click() //clicks the link, downloads in background
 				}
 			})
 	}
