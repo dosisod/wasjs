@@ -1,6 +1,6 @@
 class was {
 	constructor(current, file) { //pass this to WAS to get the elements id
-		current.onload=undefined
+		current.onload=undefined //makes it so the onclick event cannot be fired twice
 		
 		this.file=file //url to query php when found
 		this.php="was.php" //php server to upload to
@@ -11,11 +11,11 @@ class was {
 		this.fspan.innerText=file
 		this.node.append(this.fspan) //appends it to the parent div
 
-		this.link=document.createElement("a")
+		this.link=document.createElement("a") //hidden link for downloading
 		this.link.style.display="none"
 		this.node.append(this.link)
 
-		this.active=false
+		this.active=false //prevents double clicking
 
 		this.node.onclick=()=>{ if (!this.active) this.run() }
 
@@ -32,7 +32,7 @@ class was {
 		this.json=await this.challenge() //waits for response from server
 		this.key=this.json["challenge"]
 		this.bits=this.json["bits"]
-		if (this.bits>32) return
+		if (this.bits>32) return //32+ bits is an unreasonable amount so disregard
 		
 		this.index=1 //starts at 1 since 0 would cause "index%2500==0" to be true
 
@@ -96,7 +96,7 @@ class was {
 	}
 	challenge() { //gets new challenge from server
 		var form=new FormData()
-		form.append("challenge", 1) //1 can be anything, php only checks if challenge is set
+		form.append("challenge", 1) //second param can be anything, php only checks if challenge is set
 		form.append("file", this.file)
 		return fetch(this.php, {method:"post", credentials:"same-origin", body:form})
 			.then(e=>e.json())
