@@ -10,12 +10,12 @@ $bits=17; //forces the client to get a POW with n leading bits
 
 if (isset($_POST["challenge"], $_POST["file"]) && !isset($_POST["pow"])) { //if user requests challenge
 	$challenge=base64_encode(random_bytes(32)); //create challenge
-	$arr=array("bits"=>$bits, "challenge"=>$challenge, "file"=>$_POST["file"]);
 
 	$_SESSION["challenge"]=$challenge; //sets session data
 	$_SESSION["file"]=$_POST["file"];
 	$_SESSION["bits"]=$bits;
-	
+
+	$arr=array("bits"=>$bits, "challenge"=>$challenge, "file"=>$_POST["file"]);
 	echo json_encode($arr); //returns json obj to client
 }
 else if (isset($_POST["challenge"], $_POST["pow"], $_POST["file"])) { //if user completed challenge

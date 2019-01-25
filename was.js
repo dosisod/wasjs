@@ -47,11 +47,11 @@ class was {
 				var hash=sha512(this.key+this.index)
 				var digest='' //cast to string
 				for (var j of hash) { //loops through each character of hex digest to create binary digest
-					var dec=parseInt(j,16) //turns hex to dec
+					var dec=parseInt(j, 16) //turns hex to dec
 					var bin=dec.toString(2) //turns hex into binary
 					digest+="0".repeat(4-bin.length)+bin //adds leading 0s, eg turns "10" into "0010"
 				}
-				if (digest.substr(0,this.bits)=="0".repeat(this.bits)) {
+				if (Number(digest.substr(0, this.bits))==0) {
 					this.pow=this.index
 					this.done()
 					break
