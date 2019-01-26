@@ -60,9 +60,7 @@ class was {
 				}
 			}
 		}
-		var a=performance.now()
 		mine() //runs until POW is done
-		console.log(performance.now()-a)
 	}
 	async done() { //sends finished POW to server
 		this.img.onload=()=>this.color("#6eff00")
