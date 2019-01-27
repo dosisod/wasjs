@@ -15,13 +15,12 @@ if (isset($_POST["challenge"], $_POST["file"]) && !isset($_POST["pow"])) { //if 
 	$_SESSION["file"]=$_POST["file"];
 	$_SESSION["bits"]=$bits;
 
-	$arr=array("bits"=>$bits, "challenge"=>$challenge, "file"=>$_POST["file"]);
-	echo json_encode($arr); //returns json obj to client
+	echo json_encode(array("bits"=>$bits, "challenge"=>$challenge)); //returns json obj to client
 }
 else if (isset($_POST["challenge"], $_POST["pow"], $_POST["file"])) { //if user completed challenge
 	if (isset($_SESSION["challenge"], $_SESSION["file"])) { //makes sure session data exists
 		if ($_SESSION["challenge"]==$_POST["challenge"]) { //checks if challenge came from server
-			$hex=hash("sha512",$_POST["challenge"].$_POST["pow"]);
+			$hex=hash("sha512", $_POST["challenge"].$_POST["pow"]);
 			$bin="";
 			for ($i=0;$i<intdiv(strlen($hex)+3,4);$i++) { //loop through each char of hex digest
 				$bin.=str_pad(base_convert($hex[$i], 16, 2), 4, "0", STR_PAD_LEFT); //converts hex to bin
