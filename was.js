@@ -1,7 +1,5 @@
 class was {
 	constructor(current, file) { //pass this to WAS to get the elements id
-		current.onload=undefined //makes it so the onclick event cannot be fired twice
-		
 		this.file=file //url to query php when found
 		this.php="was.php" //php server to upload to
 		this.node=current.parentNode //gets parent div
@@ -101,7 +99,7 @@ class was {
 	}
 }
 
-//Below is the SHA512 code used for auth
+//Below is the SHA512 code used for hashing
 
 /*
 Copyright 2014-2018 Chen, Yi-Cyuan
