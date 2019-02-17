@@ -9,7 +9,7 @@ $path="/absolute/path/to/files/";
 //if you want to force different bits for different file types, do that here
 function bits($type) {
 	if ($type=="mp3" || $type=="mp4") return 21;
-	else if ($type="zip" || $type="exe") return 19;
+	else if ($type=="zip" || $type=="exe") return 19;
 	
 	return 17; //use this if no other file is found
 }
