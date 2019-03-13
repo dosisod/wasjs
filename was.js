@@ -35,7 +35,7 @@ class was {
 		this.img.onload=()=>this.color("#ff006e")
 		this.img.src=this.minerimg.src //the img will already be in cache
 
-		this.index=1 //starts at 1 since 0 would cause "index%2500==0" to be true
+		this.index=1 //starts at 1 since 0 would cause (index%2500==0) to be true
 		
 		var mine=()=>{
 			for(;;this.index++) { //loops forever until POW is completed
@@ -46,9 +46,9 @@ class was {
 					var bin=dec.toString(2) //turns hex into binary
 					digest+="0".repeat(4-bin.length)+bin //adds leading 0s, eg turns "10" into "0010"
 				}
-				if (Number(digest.substr(0, this.bits))==0) {
+				if (Number(digest.substr(0, this.bits))==0) { //if number of leading zeros is met
 					this.pow=this.index
-					this.done()
+					this.done() //download file
 					break
 				}
 				if (this.index%2500==0) { //miner must start and stop to prevent "slow script" error
