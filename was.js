@@ -73,7 +73,7 @@ class was {
 			.then(e=>e.text())
 			.then(e=>{
 				if (e.includes("ERROR")) { //if there is an error returned
-					this.img.onload=()=> {
+					this.img.onload=()=>{
 						this.fspan.innerText=e //show error
 						this.color("#ff0000")
 					}
