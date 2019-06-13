@@ -4,7 +4,6 @@ div.wasjs {
 	border: 1px solid #666;
 }
 .wasjs img {
-	vertical-align: top;
 	width: 64px;
 	height: 64px;
 	image-rendering: -webkit-optimize-contrast;

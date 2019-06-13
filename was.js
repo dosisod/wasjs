@@ -27,6 +27,7 @@ class was {
 	}
 	async run() {
 		this.active=true //makes sure miner isnt being ran more then once
+
 		this.json=await this.challenge() //waits for response from server
 		this.key=this.json["challenge"]
 		this.bits=this.json["bits"]
@@ -89,6 +90,7 @@ class was {
 		var form=new FormData()
 		form.append("challenge", 1) //second param can be anything, php only checks if challenge is set
 		form.append("file", this.file)
+
 		return fetch(this.php, {method:"post", credentials:"same-origin", body:form})
 			.then(e=>e.json())
 			.then(e=>{return e}) //return the text output
