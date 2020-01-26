@@ -22,7 +22,16 @@ if (isset($_POST["challenge"], $_POST["file"]) && !isset($_POST["pow"])) {
 	$challenge=base64_encode(random_bytes(32));
 
 	$_SESSION["challenge"]=$challenge;
-	$_SESSION["file"]=$_POST["file"];
+
+	//only allow numbers, letters, hyphens, dots, spaces, and quotes
+	//quotes are valid in filenames, but must will be escaped
+	$_SESSION["file"]=addslashes(
+		preg_replace(
+			"/[^A-Za-z0-9-_. \"\']/",
+			'',
+			$_POST["file"]
+		)
+	);
 
 	$extension=pathinfo($_POST["file"], PATHINFO_EXTENSION);
 

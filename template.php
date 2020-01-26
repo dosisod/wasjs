@@ -21,7 +21,7 @@ $mime=finfo_file(
 	$fullpath
 );
 
-header("Content-Disposition: attachment; filename=$clean;");
+header("Content-Disposition: attachment; filename=\"$clean;\"");
 header("Content-Type: $mime");
 header("Content-Length: filesize($fullpath)");
 
