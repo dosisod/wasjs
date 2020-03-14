@@ -39,7 +39,7 @@ class WAS {
 			//TODO: display an error
 			return
 		}
-		
+
 		this.img.onload=()=>this.setColor("#ff006e")
 		this.img.src=this.minerImg.src
 
@@ -76,8 +76,8 @@ class WAS {
 	async done() {
 		this.img.onload=()=>this.setColor("#6eff00")
 		this.img.src=this.doneImg.src
-		
-		var form=new FormData()
+
+		const form=new FormData()
 		form.append("challenge", this.key)
 		form.append("pow", this.pow)
 		form.append("file", this.filepath)
@@ -104,7 +104,7 @@ class WAS {
 	}
 
 	getChallenge() {
-		var form=new FormData()
+		const form=new FormData()
 		form.append("challenge", 1)
 		form.append("file", this.filepath)
 
