@@ -19,13 +19,12 @@ class WAS {
 			if (!this.started) this.start()
 		}
 
-		//lazy load images
 		this.minerImg=new Image()
 		this.doneImg=new Image()
 		this.errorImg=new Image()
-		this.minerImg.src="mining.gif"
-		this.doneImg.src="done.png"
-		this.errorImg.src="error.png"
+		this.minerImg.src="data:image/gif;base64, R0lGODlhEAAQAKEBAP8Abv///////////yH/C05FVFNDQVBFMi4wAwEAAAAh+QQECgD/ACwAAAAAEAAQAAACKoSPacHtvgCTZ9Ibrsw2V+p1zyg+S3iO27pNHhaSais3aV3isb7ryo8oAAAh+QQFCgACACwAAAAAEAAQAAACK4SPacHtvgCTZ9Ibrsw2V+p1zyg+S3iO27pNHhaSais3aV3iMU3euAJEFAAAIfkEBQoAAwAsAAAAABAAEAAAAiuEj2nB7b4Ak2fSG67MNlfqdc8oPkt4jtu6TR4WkmorN2ld4vEq37gCRBQAACH5BAUKAAMALAAAAAAQABAAAAIrhI9pwe2+AJNn0huuzDZX6nXPKD5LeI7buk0eFpJqKzdpXeLx6kI0rggiCgAh+QQFCgADACwAAAAAEAAQAAACLISPacHtvgCTZ9Ibrsw2V+p1zyg+S3iO27pNHhaSais3aV3i8epysf5SCAEFADs="
+		this.doneImg.src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAV0lEQVQoz2PM+89AEmBhYGCYyECspnwGRiY4C5mRz8AIQXBBOJsJWTces+GuYEKzEVMFukF5/xn+Ew3y/qPagGYbAT/gcjQ+P6CFEo39gAsMBw2MpCZvAH4SbHdg8ZWSAAAAAElFTkSuQmCC"
+		this.errorImg.src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAATklEQVQoz2P8z0AaYGFgYGD4T7QuRkYmOAuFwcgIRXBBGJsJWTc+s2GuYEKzEVMFmkGM/8n0AzY5Qn7A4Wi8fkALJRr7AQcYDhoYSU3eAAKZEjeSFuccAAAAAElFTkSuQmCC"
 	}
 
 	async start() {
